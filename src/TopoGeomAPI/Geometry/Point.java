@@ -1,7 +1,12 @@
 package TopoGeomAPI.Geometry;
 
-public class Point {
+public class Point implements GeometryEntity {
+    //States-------------------------------------------------------------------
+
     double X, Y;
+
+    //Methods------------------------------------------------------------------
+
     public Point(double X, double Y)
     {
         this.X = X;
