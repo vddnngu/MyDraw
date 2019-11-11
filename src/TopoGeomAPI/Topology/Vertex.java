@@ -2,7 +2,7 @@ package TopoGeomAPI.Topology;
 
 import TopoGeomAPI.Geometry.Point;
 
-public class Vertex extends TopoShape {
+public class Vertex implements TopoEntity {
     Point myGlobalPoint;
     public Vertex()
     {

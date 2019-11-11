@@ -1,4 +1,5 @@
 package TopoGeomAPI.Topology;
 
-public class Wire extends TopoShape {
+public class Wire implements TopoEntity {
+    Edge myEdges[];
 }

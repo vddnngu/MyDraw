@@ -1,5 +1,5 @@
 package TopoGeomAPI.Topology;
 
-public class Edge extends TopoShape {
+public class Edge implements TopoEntity {
 
 }
