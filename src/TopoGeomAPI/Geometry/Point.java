@@ -3,7 +3,7 @@ package TopoGeomAPI.Geometry;
 public class Point implements GeometryEntity {
     //States-------------------------------------------------------------------
 
-    double X, Y;
+    public double X, Y;
 
     //Methods------------------------------------------------------------------
 
