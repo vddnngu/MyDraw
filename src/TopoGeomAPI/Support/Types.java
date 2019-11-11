@@ -12,4 +12,10 @@ public enum Types {
     CurveTypes_Line,
     CurveTypes_Circle,
     CurveTypes_Ellipse,
+
+    //ShapeTypes---------------------------------------------------------------
+
+    ShapeTypes_Vertex,
+    ShapeTypes_Edge,
+    ShapeTypes_Wire
 }
