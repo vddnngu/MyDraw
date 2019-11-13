@@ -8,23 +8,29 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class Client {
+
+    //States------------------------------------------------------
+
     private static final int port = 1111;
     private Socket clientSocket;
-    InetAddress ip = null;
-    private DataOutputStream dos;
-    private DataInputStream dis;
+    InetAddress inetAddress = null;
+    private DataOutputStream dataOutputStream;
+    private DataInputStream dataInputStream;
+
+    //Methods-----------------------------------------------------
+
     class MyThread extends Thread {
         @Override
         public void run(){
             try{
                 try{
-                    ip=InetAddress.getLocalHost();
+                    inetAddress =InetAddress.getLocalHost();
                 }catch (UnknownHostException e){
                     e.printStackTrace();
                 }
-                clientSocket = new Socket(ip, port);
-                dis = new DataInputStream(clientSocket.getInputStream());
-                dos = new DataOutputStream(clientSocket.getOutputStream());
+                clientSocket = new Socket(inetAddress, port);
+                dataInputStream = new DataInputStream(clientSocket.getInputStream());
+                dataOutputStream = new DataOutputStream(clientSocket.getOutputStream());
             }catch (IOException e){
                 e.printStackTrace();
             }

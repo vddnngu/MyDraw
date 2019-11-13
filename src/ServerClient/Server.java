@@ -11,13 +11,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class Server {
+
+    //States------------------------------------------------------------
+
     int port = 1111;
-    InetAddress ip = null;
-    ServerSocket ss;
-    List<Socket> cs;
-    List<DataInputStream> dis;
-    List<DataOutputStream> dos;
-    Socket sc;
+    InetAddress inetAdress = null;
+    ServerSocket serverSocket;
+    List<Socket> clientSocket;
+    List<DataInputStream> dataInputStreams;
+    List<DataOutputStream> dataOutputStreams;
+
+    //Methods-----------------------------------------------------------
 
     class MyThread extends Thread {
         @Override
@@ -25,17 +29,18 @@ public class Server {
             //инициализация каналов общения в сокете для сервера
             try {
                 //подключение к сокету общения на серверной стороне
-                Socket socket = ss.accept();
-                synchronized (cs) {
-                    int id = cs.size();
+                Socket socket = serverSocket.accept();
+                synchronized (clientSocket) {
+                    //номер подключаемого клиента
+                    int id = clientSocket.size();
                     System.out.println("Connected: " + id + " client");
-                    cs.add(socket);
+                    clientSocket.add(socket);
                     DataInputStream newDis = new DataInputStream(socket.getInputStream()); //канал чтения из сокета
                     DataOutputStream newDos = new DataOutputStream(socket.getOutputStream());//канал записи в сокета
-                    synchronized (dis) {
-                        dis.add(newDis);
-                        synchronized (dos) {
-                            dos.add(newDos);
+                    synchronized (dataInputStreams) {
+                        dataInputStreams.add(newDis);
+                        synchronized (dataOutputStreams) {
+                            dataOutputStreams.add(newDos);
                         }
                     }
                 }
@@ -47,18 +52,18 @@ public class Server {
         }
     }
 
-    public void startServer() {
+    public void StartServer() {
         try {
-            ip = InetAddress.getLocalHost();
+            inetAdress = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         try {
-            ss = new ServerSocket(port, 0, ip);
+            serverSocket = new ServerSocket(port, 0, inetAdress);
             System.out.println("Server started!");
-            cs = new ArrayList<>();
-            dis = new ArrayList<>();
-            dos = new ArrayList<>();
+            clientSocket = new ArrayList<>();
+            dataInputStreams = new ArrayList<>();
+            dataOutputStreams = new ArrayList<>();
             MyThread firstThread = new MyThread();
             firstThread.start();
         } catch (IOException e) {
@@ -68,6 +73,6 @@ public class Server {
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.startServer();
+        server.StartServer();
     }
 }
