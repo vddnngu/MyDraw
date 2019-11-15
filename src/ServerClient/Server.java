@@ -1,48 +1,64 @@
 package ServerClient;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.UnknownHostException;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 public class Server {
-
-    //States------------------------------------------------------------
-
+    //States
     int port = 1111;
-    InetAddress inetAdress = null;
+    InetAddress inetAddress = null;
     ServerSocket serverSocket;
-    List<Socket> clientSocket;
+    List<Socket> socketList;
     List<DataInputStream> dataInputStreams;
     List<DataOutputStream> dataOutputStreams;
+    List<ReaderThread> readers;
 
-    //Methods-----------------------------------------------------------
-
+    //Methods
+    class ReaderThread extends  Thread {
+        public  int id;
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    String answer = dataInputStreams.get(id).readUTF();
+                    System.out.println(id);
+                    System.out.println(answer);
+                } catch (java.io.IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+        }
+    }
     class MyThread extends Thread {
         @Override
         public void run() {
-            //инициализация каналов общения в сокете для сервера
             try {
-                //подключение к сокету общения на серверной стороне
                 Socket socket = serverSocket.accept();
-                synchronized (clientSocket) {
-                    //номер подключаемого клиента
-                    int id = clientSocket.size();
-                    System.out.println("Connected: " + id + " client");
-                    clientSocket.add(socket);
-                    DataInputStream newDis = new DataInputStream(socket.getInputStream()); //канал чтения из сокета
-                    DataOutputStream newDos = new DataOutputStream(socket.getOutputStream());//канал записи в сокета
+                synchronized (socketList) {
+                    int id = socketList.size();
+                    System.out.println("Connected: " + id + " client!");
+                    socketList.add(socket);
+                    DataInputStream newDis = new DataInputStream(socket.getInputStream());
+                    DataOutputStream newDos = new DataOutputStream(socket.getOutputStream());
+                    ReaderThread reader = new ReaderThread();
+                    reader.id = id;
                     synchronized (dataInputStreams) {
                         dataInputStreams.add(newDis);
                         synchronized (dataOutputStreams) {
                             dataOutputStreams.add(newDos);
+                            synchronized (readers) {
+                                readers.add(reader);
+                            }
                         }
                     }
+                    reader.start();
                 }
             } catch (IOException e) {
                 e.printStackTrace();
@@ -52,27 +68,36 @@ public class Server {
         }
     }
 
-    public void StartServer() {
+    public void startServer() {
         try {
-            inetAdress = InetAddress.getLocalHost();
+            inetAddress = InetAddress.getLocalHost();
         } catch (UnknownHostException e) {
             e.printStackTrace();
         }
         try {
-            serverSocket = new ServerSocket(port, 0, inetAdress);
+            serverSocket = new ServerSocket(port, 0, inetAddress);
             System.out.println("Server started!");
-            clientSocket = new ArrayList<>();
+            socketList = new ArrayList<>();
             dataInputStreams = new ArrayList<>();
             dataOutputStreams = new ArrayList<>();
+            readers = new ArrayList<>();
+
             MyThread firstThread = new MyThread();
             firstThread.start();
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+    //TODO
+    public void EventHandler(){
+
+    }
+    public void ExitHandler(){
+
+    }
 
     public static void main(String[] args) {
         Server server = new Server();
-        server.StartServer();
+        server.startServer();
     }
 }
