@@ -1,5 +1,7 @@
 package ServerClient;
 
+import com.google.gson.Gson;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
@@ -57,8 +59,15 @@ class Client extends JFrame {
             @Override
             public void actionPerformed(ActionEvent e) {
                 try {
+                    String test;
                     System.out.println(textField.getText());
-                    outMessage.writeUTF(textField.getText());
+                    test = textField.getText();
+                    TestImg obj = new TestImg(test);
+                    Gson gson = new Gson();
+                    String JSON = gson.toJson(obj);
+                    System.out.println(JSON);
+                    outMessage.writeUTF(JSON);
+                    //outMessage.writeUTF(textField.getText());
                     outMessage.flush();
                 } catch (IOException ex) {
                     ex.printStackTrace();
@@ -71,7 +80,8 @@ class Client extends JFrame {
                 try {
                     while (true) {
                         String answer = inMessage.readUTF();
-                        outMessage.writeUTF(answer);
+                        //outMessage.writeUTF(answer);
+                        System.out.println(answer);
                     }
                 } catch (Exception e) { }
             }

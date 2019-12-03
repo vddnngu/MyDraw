@@ -18,9 +18,40 @@ public class Server {
     List<Socket> socketList;
     List<DataInputStream> dataInputStreams;
     List<DataOutputStream> dataOutputStreams;
-    List<ReaderThread> readers;
+
+    List<MessagesThread> readers;
 
     //Methods
+    class MessagesThread extends  Thread {
+        public  int id;
+        @Override
+        public void run() {
+            while (true) {
+                try {
+                    String answer = dataInputStreams.get(id).readUTF();
+                    System.out.println(id);
+                    System.out.println(answer);
+                    sendMessages(answer);
+                } catch (java.io.IOException ex) {
+                    ex.printStackTrace();
+                    break;
+                }
+            }
+        }
+        public void sendMessages(String answer)
+        {
+            int idClient;
+            for (idClient = 0; idClient < socketList.size(); idClient++) {
+                try {
+                    dataOutputStreams.get(idClient).writeUTF(answer);
+                    dataOutputStreams.get(idClient).flush();
+                } catch (IOException ex) {
+                    //ex.printStackTrace();
+                }
+            }
+        }
+    }
+
     class ReaderThread extends  Thread {
         public  int id;
         @Override
@@ -32,6 +63,7 @@ public class Server {
                     System.out.println(answer);
                 } catch (java.io.IOException ex) {
                     ex.printStackTrace();
+                    break;
                 }
             }
         }
@@ -47,7 +79,7 @@ public class Server {
                     socketList.add(socket);
                     DataInputStream newDis = new DataInputStream(socket.getInputStream());
                     DataOutputStream newDos = new DataOutputStream(socket.getOutputStream());
-                    ReaderThread reader = new ReaderThread();
+                    MessagesThread reader = new MessagesThread();
                     reader.id = id;
                     synchronized (dataInputStreams) {
                         dataInputStreams.add(newDis);
