@@ -90,6 +90,7 @@ class Client extends JFrame {
     }
 
     //TODO
+    //Кнопку сохранить от Андрея  передать на сервер измененную фигуру, отправить остальным результат
     public void RepaintHandler(){
 
     }
