@@ -15,10 +15,7 @@ public class Wire implements TopoEntity {
         myEdges = edges;
     }
 
-    public Wire()
-    {
-        myEdges = new ArrayList<Edge>();
-    }
+
 
     public void Add(Edge edge){
         myEdges.add(edge);
