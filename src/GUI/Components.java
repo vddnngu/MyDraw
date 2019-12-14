@@ -3,18 +3,44 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 
-public class GUIComponentsInitializer implements IGUIBaseComponents {
-    public GUIComponentsInitializer() {
-        createGUIComponents();
-    }
+public class Components {
+    JFrame mFrame = new JFrame("MyDraw ver 1.0");
 
-    public void createGUIComponents() {
+    GUI.MyPanel graphPanel = new GUI.MyPanel();
+
+    JPanel externalPanel = new JPanel();
+    JPanel templateListPanel = new JPanel();
+    JPanel shapeButtonPanel = new JPanel();
+
+    JMenuBar menuBar = new JMenuBar();
+    JMenu fileMenu = new JMenu("Menu");
+    JMenuItem saveBoard = new JMenuItem("Save board");
+    JMenuItem loadDrawnBoard = new JMenuItem("Load board");
+
+    JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
+    JToolBar templateBar = new JToolBar("template", JToolBar.VERTICAL);
+
+    JButton lineButton = new JButton(new ImageIcon("img/line.png"));
+    JButton elipsButton = new JButton(new ImageIcon("img/elips.png"));
+    JButton rectButton = new JButton(new ImageIcon("img/rect.png"));
+    JButton loadBoard = new JButton("Load the board");
+    JButton selectCustomShape = new JButton("Select shape");
+    JButton editCustomShape = new JButton("Edit shape");
+    JButton createCustomShape = new JButton("Create shape");
+    JButton deleteCustomShape = new JButton("Delete shape");
+
+    JLabel templateListLabel = new JLabel("List of custom shape");
+
+    Font bigFontTR = new Font("TimesRoman", Font.BOLD, 16);
+    Font smallFontTR = new Font("Times", Font.BOLD, 12);
+    Font middleFontTR = new Font("Times", Font.BOLD, 13);
+
+    public void initComponents() {
+        mFrame = new JFrame("MyDraw ver 1.0");
         mFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mFrame.setJMenuBar(menuBar);
         mFrame.setVisible(true);
-
-        // Set size
-        mFrame.setSize(650, 650);
+        mFrame.setSize(850, 650);
 
         // Set layouts
         externalPanel.setLayout(new BorderLayout());

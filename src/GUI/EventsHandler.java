@@ -3,15 +3,16 @@ package GUI;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 
-public class GUIEventsHandler extends GUIComponentsInitializer {
+public class EventsHandler extends Components{
     private int drawMode = 0;
 
     private boolean pressed = false;
 
-    public GUIEventsHandler(){
+    public EventsHandler(){
     }
 
-    public void handlerStarting(){
+    public void handlerStarting(Components board){
+        board.initComponents();
         lineButton.addActionListener(event -> drawMode = 1);
 
         elipsButton.addActionListener(event -> drawMode = 2);
