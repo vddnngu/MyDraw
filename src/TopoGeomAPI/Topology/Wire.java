@@ -1,5 +1,6 @@
 package TopoGeomAPI.Topology;
 
+import TopoGeomAPI.Geometry.Point;
 import TopoGeomAPI.Support.Types;
 
 import java.util.*;
@@ -8,6 +9,7 @@ public class Wire implements TopoEntity {
     //States-------------------------------------------------------------------
 
     public List<Edge> myEdges;
+    public List<Point> points;
 
     //Methods------------------------------------------------------------------
 
@@ -22,6 +24,10 @@ public class Wire implements TopoEntity {
 
     public void Add(Edge edge){
         myEdges.add(edge);
+    }
+
+    public List<Point> getPoints() {
+        return points;
     }
 
     @Override
