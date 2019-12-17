@@ -7,6 +7,8 @@ public class GUIStart {
         SwingUtilities.invokeLater(() -> {
             Components board = new Components();
             board.initComponents();
+            EventsHandler event = new EventsHandler();
+            event.handlerStarting(board);
         });
     }
 }

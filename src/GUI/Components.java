@@ -23,11 +23,12 @@ public class Components {
     JButton lineButton = new JButton(new ImageIcon("img/line.png"));
     JButton elipsButton = new JButton(new ImageIcon("img/elips.png"));
     JButton rectButton = new JButton(new ImageIcon("img/rect.png"));
-    JButton loadBoard = new JButton("Load the board");
+
     JButton selectCustomShape = new JButton("Select shape");
     JButton editCustomShape = new JButton("Edit shape");
     JButton createCustomShape = new JButton("Create shape");
     JButton deleteCustomShape = new JButton("Delete shape");
+    JButton acceptDrawing = new JButton("Accept");
 
     JLabel templateListLabel = new JLabel("List of custom shape");
 
