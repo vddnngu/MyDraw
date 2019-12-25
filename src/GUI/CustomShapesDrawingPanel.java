@@ -243,7 +243,6 @@ public class CustomShapesDrawingPanel {
                 loading=false;
             }
         });
-        //mFrame.setLayout(null);
         mFrame.setVisible(true);
     }
 

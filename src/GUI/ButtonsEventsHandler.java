@@ -36,7 +36,7 @@ public class ButtonsEventsHandler extends GUIStartPanel {
     }
 
     public static void onCancelButtonClick() {
-
+        
     }
 
     public static void onLineButtonClick() {
