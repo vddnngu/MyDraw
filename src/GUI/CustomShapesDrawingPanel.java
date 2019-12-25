@@ -45,9 +45,9 @@ public class CustomShapesDrawingPanel {
         JToolBar toolBar = new JToolBar("Toolbar", JToolBar.VERTICAL);
         JToolBar buttomBar = new JToolBar("Buttombar", JToolBar.HORIZONTAL);
 
-        JButton lineButton = new JButton(new ImageIcon("img/line.png"));
-        JButton elipsButton = new JButton(new ImageIcon("img/elips.png"));
-        JButton rectButton = new JButton(new ImageIcon("img/rect.png"));
+        JButton lineButton = new JButton(new ImageIcon("src/GUI/image/line.png"));
+        JButton elipsButton = new JButton(new ImageIcon("src/GUI/image/elips.png"));
+        JButton rectButton = new JButton(new ImageIcon("src/GUI/image/rect.png"));
         JButton acceptDrawingButton = new JButton("Accept");
         JButton cancelActionButton = new JButton("Cancel");
         JButton backButton = new JButton("Back");
@@ -104,21 +104,21 @@ public class CustomShapesDrawingPanel {
          */
         cancelActionButton.setBackground(Color.CYAN);
         cancelActionButton.setFont(smallFontTR);
-        cancelActionButton.setIcon(new ImageIcon("img/undo-icon.png"));
+        cancelActionButton.setIcon(new ImageIcon("src/GUI/image/undo-icon.png"));
         cancelActionButton.addActionListener(e -> {
             ButtonsEventsHandler.onCancelButtonClick();
         });
 
         acceptDrawingButton.setBackground(Color.CYAN);
         acceptDrawingButton.setFont(smallFontTR);
-        acceptDrawingButton.setIcon(new ImageIcon("img/accept-icon.png"));
+        acceptDrawingButton.setIcon(new ImageIcon("src/GUI/image/accept-icon.png"));
         acceptDrawingButton.addActionListener(e -> {
             ButtonsEventsHandler.onAcceptButtonClick();
         });
 
         backButton.setBackground(Color.CYAN);
         backButton.setFont(smallFontTR);
-        backButton.setIcon(new ImageIcon("img/back.png"));
+        backButton.setIcon(new ImageIcon("src/GUI/image/back.png"));
         backButton.addActionListener(e -> {
             ButtonsEventsHandler.onBackButtonClick(mFrame);
         });

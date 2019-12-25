@@ -126,14 +126,14 @@ public class GUIStartPanel {
 
         cancelActionButton.setBackground(Color.CYAN);
         cancelActionButton.setFont(smallFontTR);
-        cancelActionButton.setIcon(new ImageIcon("img/undo-icon.png"));
+        cancelActionButton.setIcon(new ImageIcon("src/GUI/image/undo-icon.png"));
         cancelActionButton.addActionListener(e -> {
             ButtonsEventsHandler.onCancelButtonClick();
         });
 
         acceptDrawingButton.setBackground(Color.CYAN);
         acceptDrawingButton.setFont(smallFontTR);
-        acceptDrawingButton.setIcon(new ImageIcon("img/accept-icon.png"));
+        acceptDrawingButton.setIcon(new ImageIcon("src/GUI/image/accept-icon.png"));
         acceptDrawingButton.addActionListener(e -> {
             ButtonsEventsHandler.onAcceptButtonClick();
         });
