@@ -34,7 +34,7 @@ class Reader extends  Thread {
                 System.out.println("Im getting code: " + code);
                 if(code == 0)//client wants get the actual data
                 {
-                    int  = dis.readInt();
+                    int id = dis.readInt();
                     server.sendActualData(id);
                 }
                 if(code == 1)//added new shape
@@ -207,7 +207,7 @@ public class Server {
 
 
     public void sendActualData(int id) {
-        writers.get(id).sendData();
+        writers.get(id).sendData(id);
     }
 
     public static void main(String[] args) {
