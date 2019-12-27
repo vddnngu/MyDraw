@@ -90,7 +90,7 @@ public class Server {
         dataIsUpdate();
     }
     public void deleteShapeInCustomSh(int num){
-        shapesForDrawing.remove(num);
+        customShapes.remove(num);
         deleteShapesMatchCustom(num);
         dataIsUpdate();
     }
@@ -98,7 +98,7 @@ public class Server {
     private void deleteShapesMatchCustom(int num){
         ArrayList<Integer> shapesToDelete = shapesMap.get(num);
         Collections.sort(shapesToDelete, Collections.reverseOrder());
-        for (Integer it : shapesToDelete) {
+        for (int it : shapesToDelete) {
             shapesForDrawing.remove(it);
         }
     }

@@ -64,45 +64,38 @@ class Client {
         Message msg = new Message();
         msg.code = Cods.ClientCode_GetSFD;
         server.sendMsg(msg);
-
     }
     public void getActualCustomShapeList(){
         Message msg = new Message();
         msg.code = Cods.ClientCode_GetCS;
         server.sendMsg(msg);
-
     }
     public  boolean myDataIsActual(){
         return  dataIsActual;
     }
 
     public void dataIsNotActual() {
+
         dataIsActual = false;
     }
 
     public void updateCustomShape(ArrayList<String> data) {
         customShapes = new ArrayList<Shape>();
         for (String it : data)
-            customShapes.add(DataTransferType.transfer(it));
-        dataIsActual = true;
+            customShapes.add(DataTransferType.transfer(it));;
     }
 
     public void updateShapesForDrawing(ArrayList<String> data) {
         shapesForDrawing = new ArrayList<Shape>();
         for (String it : data)
             shapesForDrawing.add(DataTransferType.transfer(it));
-        dataIsActual = true;
     }
 
     public ArrayList<Shape> getCustomShapes() {
-        //while(!dataIsActual);
-        dataIsActual = false;
         return customShapes;
     }
 
     public ArrayList<Shape> getShapesForDrawing() {
-        //while(!dataIsActual);
-        dataIsActual = false;
         return shapesForDrawing;
     }
 
@@ -113,10 +106,15 @@ class Client {
         cl.getActualCustomShapeList();
         cl.getCustomShapes();
         cl.addCustomShape(DataTransferType.transfer("W!1!1!2!0!0!4!0"));
-        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
-        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
-        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
-        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!6"), cl.customShapes.size()-1);
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size());
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size());
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size());
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!6"), cl.customShapes.size());
+        cl.getActualDrawList();
+        sh = cl.getShapesForDrawing();
+        cl.getActualCustomShapeList();
+        sh = cl.getCustomShapes();
+        cl.deleteCustomShape(2);
         cl.getActualDrawList();
         sh = cl.getShapesForDrawing();
         cl.getActualCustomShapeList();

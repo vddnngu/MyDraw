@@ -16,7 +16,6 @@ public class ServerHandler implements Runnable {
     private Socket mySocket;
 
 
-    // конструктор, который принимает клиентский сокет и сервер
     public ServerHandler(Client client, Socket socket) {
         try {
             this.client = client;
@@ -37,6 +36,7 @@ public class ServerHandler implements Runnable {
                     msg.code = code;
                     switch (code) {
                         case ServerCode_SetCS:
+
                             int count = inMessage.readInt();
                             for (int i = 0; i < count; i++)
                                 msg.data.add(inMessage.readUTF());
@@ -53,7 +53,8 @@ public class ServerHandler implements Runnable {
                             break;
                         case ServerCode_DataNotActual:
                             Logger.LogIn(msg);
-                            client.dataIsNotActual();
+                            if(client.myDataIsActual())
+                                client.dataIsNotActual();
                             break;
                     }
                 }
@@ -63,7 +64,6 @@ public class ServerHandler implements Runnable {
             ex.printStackTrace();
         }
     }
-    // отправляем сообщение
     public void sendMsg(Message msg) {
         try {
             synchronized (outMessage){
