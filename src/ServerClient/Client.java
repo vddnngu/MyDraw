@@ -73,6 +73,9 @@ class Client {
     public  boolean myDataIsActual(){
         return  dataIsActual;
     }
+    public  void setDataIsActual(boolean b){
+        dataIsActual = b;
+    }
 
     public void dataIsNotActual() {
 
@@ -82,7 +85,7 @@ class Client {
     public void updateCustomShape(ArrayList<String> data) {
         customShapes = new ArrayList<Shape>();
         for (String it : data)
-            customShapes.add(DataTransferType.transfer(it));;
+            customShapes.add(DataTransferType.transfer(it));
     }
 
     public void updateShapesForDrawing(ArrayList<String> data) {
@@ -97,6 +100,14 @@ class Client {
 
     public ArrayList<Shape> getShapesForDrawing() {
         return shapesForDrawing;
+    }
+    public void waitActualData(){
+        new Thread(){
+            @Override
+            public void run() {
+                while(!dataIsActual);
+            }
+        }.start();
     }
 
     public static void main(String[] args) {

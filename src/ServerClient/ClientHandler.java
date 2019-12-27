@@ -73,28 +73,30 @@ public class ClientHandler implements Runnable {
                             Logger.LogIn(msg);
                             break;
                         case ClientCode_GetCS:
-                            synchronized (server.customShapes){
+
                             Logger.LogIn(msg);
                             msg.code = Cods.ServerCode_SetCS;
                             msg.data = new ArrayList<String>(server.getCustomShapes());
                             sendMsg(msg);
-                            break;}
+                            break;
                         case ClientCode_GetSFD:
-                            synchronized (server.shapesForDrawing){
+
                             Logger.LogIn(msg);
                             msg.code = Cods.ServerCode_SetSFD;
                             msg.data = new ArrayList<String>(server.getShapesForDrawing());
                             sendMsg(msg);
-                            break;}
+                            break;
                         default:break;
                     }
-            }}
+                }
+            }
         }
-        catch ( IOException ex) {
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }
     public void sendMsg(Message msg) {
+        synchronized (msg){
         try {
             synchronized (outMessage){
             outMessage.writeInt(msg.code.getValue());
@@ -128,6 +130,6 @@ public class ClientHandler implements Runnable {
             e.printStackTrace();
         }
         Logger.LogOut(msg);
-    }
+    }}
 
 }

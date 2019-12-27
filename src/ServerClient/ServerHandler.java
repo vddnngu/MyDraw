@@ -14,6 +14,7 @@ public class ServerHandler implements Runnable {
     private static final int PORT = 3443;
     private Client client = null;
     private Socket mySocket;
+    public boolean dataIsActual;
 
 
     public ServerHandler(Client client, Socket socket) {
@@ -53,14 +54,13 @@ public class ServerHandler implements Runnable {
                             break;
                         case ServerCode_DataNotActual:
                             Logger.LogIn(msg);
-                            if(client.myDataIsActual())
-                                client.dataIsNotActual();
+
                             break;
                     }
                 }
             }
         }
-        catch ( IOException ex) {
+        catch (IOException ex) {
             ex.printStackTrace();
         }
     }

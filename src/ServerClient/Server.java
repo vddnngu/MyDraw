@@ -40,6 +40,13 @@ public class Server {
                 ClientHandler client = new ClientHandler(clientSocket, this);
                 clients.add(client);
                 new Thread(client).start();
+                Message msg = new Message();
+                msg.code = Cods.ServerCode_SetCS;
+                msg.data = new ArrayList<String>(customShapes);
+                client.sendMsg(msg);
+                msg.code = Cods.ServerCode_SetSFD;
+                msg.data = new ArrayList<String>(shapesForDrawing);
+                client.sendMsg(msg);
             }
         }
         catch (IOException ex) {
@@ -65,7 +72,11 @@ public class Server {
     }
     void dataIsUpdate(){
         Message msg = new Message();
-        msg.code = Cods.ServerCode_DataNotActual;
+        msg.code = Cods.ServerCode_SetCS;
+        msg.data = new ArrayList<String>(customShapes);
+        sendMessageToAllClients(msg);
+        msg.code = Cods.ServerCode_SetSFD;
+        msg.data = new ArrayList<String>(shapesForDrawing);
         sendMessageToAllClients(msg);
     }
     public void addShapeForDrawing(String sh, int customShNumber){
