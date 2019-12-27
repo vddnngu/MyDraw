@@ -1,6 +1,6 @@
 package TopoGeomAPI.HotFix;
 
-import TopoGeomAPI.Geometry.Point;
+import TopoGeomAPI.HotFix.Point;
 
 public class Circle implements Shape{
 

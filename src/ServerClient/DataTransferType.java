@@ -1,6 +1,6 @@
 package ServerClient;
 
-import TopoGeomAPI.Geometry.Point;
+import TopoGeomAPI.HotFix.Point;
 import TopoGeomAPI.HotFix.Circle;
 import TopoGeomAPI.HotFix.STypes;
 import TopoGeomAPI.HotFix.Shape;
@@ -20,19 +20,19 @@ public class DataTransferType {
         if(shape.type()== STypes.Wire){
             Wire tmp = (Wire)shape;
             res+="W";
-            res+="|"+tmp.getAx2d().X+"|"+tmp.getAx2d().Y;
+            res+="!"+tmp.getAx2d().X+"!"+tmp.getAx2d().Y;
             List<Point> listPoints = tmp.getPoints();
-            res+="|"+listPoints.size();
+            res+="!"+listPoints.size();
             for (int i = 0; i<listPoints.size();i++){
-                res+="|"+listPoints.get(i).X+"|"+listPoints.get(i).Y;
+                res+="!"+listPoints.get(i).X+"!"+listPoints.get(i).Y;
             }
         }else
         {
             Circle tmp = (Circle)shape;
             res+="C";
-            res+="|"+tmp.getAx2d().X+"|"+tmp.getAx2d().Y;
-            res+="|"+tmp.getRadius();
-            res+="|"+tmp.getCentr().X+"|"+tmp.getCentr().Y;
+            res+="!"+tmp.getAx2d().X+"!"+tmp.getAx2d().Y;
+            res+="!"+tmp.getRadius();
+            res+="!"+tmp.getCentr().X+"!"+tmp.getCentr().Y;
         }
         return res;
     }
@@ -40,7 +40,7 @@ public class DataTransferType {
         Shape res;
         if(str.charAt(0)=='W'){
             res = new Wire();
-            String[] strs = str.split("|");
+            String[] strs = str.split("!");
             ((Wire)res).setAx2d(new Point(Integer.parseInt(strs[1]),Integer.parseInt(strs[2])));
             int size = Integer.parseInt(strs[3]);
             for (int i = 0; i<size*2; i+=2){
@@ -48,7 +48,7 @@ public class DataTransferType {
             }
         }else{
             res = new Circle();
-            String[] strs = str.split("|");
+            String[] strs = str.split("!");
             ((Circle)res).setAx2d(new Point(Integer.parseInt(strs[1]),Integer.parseInt(strs[2])));
             ((Circle)res).setRadius(Integer.parseInt(strs[3]));
             ((Circle)res).setCentr(new Point(Integer.parseInt(strs[4]),Integer.parseInt(strs[5])));

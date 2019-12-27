@@ -4,215 +4,126 @@ import java.lang.reflect.Type;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.*;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.List;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.util.ArrayList;
 
-
-
-class Reader extends  Thread {
-
-    Server server;
-    Socket client;
-    DataInputStream dis;
-    int id;
-
-    public Reader(Server server, Socket client, int id) throws IOException {
-        this.server=server;
-        this.client=client;
-        this.id=id;
-        dis = new DataInputStream(client.getInputStream());
-    }
-    @Override
-    public void run() {
-        while (true) {
-            try {
-                int code = dis.readInt();
-                System.out.println("Im getting code: " + code);
-                if(code == 0)//client wants get the actual data
-                {
-                    int  = dis.readInt();
-                    server.sendActualData(id);
-                }
-                if(code == 1)//added new shape
-                {
-                    String shapeTR = dis.readUTF();
-                    server.addShape(shapeTR);
-                }
-                if(code == 2)//delete shape
-                {
-                    int numToDel = dis.readInt();
-                    server.delShape(numToDel);
-                }
-                if(code == 3)//added new custom shape
-                {
-                    String shapeTR = dis.readUTF();
-                    server.addCustomShape(shapeTR);
-                }
-                if(code == 4)//delete custom shape
-                {
-                    int numToDel = dis.readInt();
-                    server.delCustomShape(numToDel);
-                }
-
-            } catch (java.io.IOException ex) {
-                ex.printStackTrace();
-                break;
-            }
-        }
-    }
-}
-class Writer {
-    Server server;
-    Socket client;
-    DataOutputStream dos;
-    int id;
-
-    public Writer(Server server, Socket client, int id) throws IOException {
-        this.server=server;
-        this.client=client;
-        this.id=id;
-        dos = new DataOutputStream(client.getOutputStream());
-    }
-
-    public void dataIsNotActual(int code){
-        try {
-            dos.write(code);//code -1
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void sendData(int code) {
-        if(code == 1){
-            synchronized (server.modelsForDrawing)
-            {try {
-                dos.write(1);
-                dos.write(server.modelsForDrawing.size());
-
-
-            for(int i = 0; i<server.modelsForDrawing.size();i++) {
-                dos.writeUTF(server.modelsForDrawing.get(i));
-            }
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            }
-        }
-        //if(code == 2)
-    }
-}
-class WaitClientTread extends Thread {
-    Server server;
-    public WaitClientTread(Server server){
-        this.server = server;
-    }
-    @Override
-    public void run() {
-        try {
-            while(true){
-            Socket clientSocket = server.serverSocket.accept();
-            synchronized (server.clientList) {
-                int id = server.clientList.size();
-                System.out.println("Connected: " + id + " client!");
-                server.clientList.add(clientSocket);
-                Reader newReader = new Reader(server, clientSocket, id);
-                Writer newWriter = new Writer(server, clientSocket, id);
-                synchronized (server.readers) {
-                    server.readers.add(newReader);
-                    synchronized (server.writers) {
-                        server.writers.add(newWriter);
-                    }
-                }
-                newReader.start();
-            }
-        }
-        }
-        catch (IOException e) {
-            e.printStackTrace();
-
-    }
-    }
-}
 public class Server {
-    //States
-    int port = 1111;
-    InetAddress inetAddress = null;
-    ServerSocket serverSocket;
-    List<Socket> clientList;
+    static final int PORT = 3443;
+     ArrayList<ClientHandler> clients = new ArrayList<ClientHandler>();
+     ArrayList<String> shapesForDrawing;
+     ArrayList<String> customShapes;
+    HashMap<Integer, ArrayList<Integer>> shapesMap;
 
-    List<String> modelsForDrawing;
-    List<String> customModels;
+    public Server() {
 
-
-    List<Reader> readers;
-    List<Writer> writers;
-
-    //Methods
-    public void startServer() {
+        shapesForDrawing = new ArrayList<String>();
+        customShapes = new ArrayList<String>();
+        shapesMap = new HashMap<Integer, ArrayList<Integer>>();
+    }
+    public void start(){
+        Socket clientSocket = null;
+        ServerSocket serverSocket = null;
         try {
-            inetAddress = InetAddress.getLocalHost();
-        } catch (UnknownHostException e) {
-            e.printStackTrace();
+            serverSocket = new ServerSocket(PORT);
+            System.out.println("Сервер запущен!");
+            while (true) {
+                clientSocket = serverSocket.accept();
+                System.out.println("Клиент подключен!");
+                ClientHandler client = new ClientHandler(clientSocket, this);
+                clients.add(client);
+                new Thread(client).start();
+            }
         }
-        try {
-            serverSocket = new ServerSocket(port, 0, inetAddress);
-            System.out.println("Server started!");
-            clientList = new ArrayList<>();
-
-            WaitClientTread waitClientTread = new WaitClientTread(this);
-
-        } catch (IOException e) {
-            e.printStackTrace();
+        catch (IOException ex) {
+            ex.printStackTrace();
         }
-    }
-
-    public void addShape(String shapeTR){
-        synchronized (modelsForDrawing){
-            modelsForDrawing.add(shapeTR);
-        }
-        notifyClients(1);
-    }
-
-    public void delShape(int numOfShape){
-        synchronized (modelsForDrawing){
-            modelsForDrawing.remove(numOfShape);
-        }
-        notifyClients(1);
-    }
-
-    public void addCustomShape(String shapeTR){
-        synchronized (customModels){
-            customModels.add(shapeTR);
-        }
-        notifyClients(2);
-    }
-
-    public void delCustomShape(int numOfShape){
-        synchronized (customModels){
-            customModels.remove(numOfShape);
-        }
-        notifyClients(2);
-    }
-
-    void notifyClients(int code){// 1-changed shapes, 2-changed customSh
-        for (int i = 0; i<writers.size();i++)
-        {
-            writers.get(i).dataIsNotActual(code);
+        finally {
+            try {
+                clientSocket.close();
+                System.out.println("Сервер остановлен");
+                serverSocket.close();
+            }
+            catch (IOException ex) {
+                ex.printStackTrace();
+            }
         }
     }
 
+    public void sendMessageToAllClients(Message msg) {
+        for (ClientHandler it : clients) {
+            it.sendMsg(msg);
+        }
 
-    public void sendActualData(int id) {
-        writers.get(id).sendData();
+    }
+    void dataIsUpdate(){
+        Message msg = new Message();
+        msg.code = Cods.ServerCode_DataNotActual;
+        sendMessageToAllClients(msg);
+    }
+    public void addShapeForDrawing(String sh, int customShNumber){
+        shapesForDrawing.add(sh);
+        shapesMap.get(customShNumber).add(shapesForDrawing.size()-1);
+        dataIsUpdate();
+    }
+    public void addCustomShape(String sh){
+        customShapes.add(sh);
+        shapesMap.put(shapesMap.size(), new ArrayList<Integer>());
+        dataIsUpdate();
+    }
+    public void deleteShapeInSFD(int num){
+        shapesForDrawing.remove(num);
+        dataIsUpdate();
+    }
+    public void deleteShapeInSFD(ArrayList<Integer> nums){
+        Collections.sort(nums, Collections.reverseOrder());
+        for (Integer it : nums) {
+            shapesForDrawing.remove(it);
+        }
+        dataIsUpdate();
+    }
+    public void deleteShapeInCustomSh(int num){
+        shapesForDrawing.remove(num);
+        deleteShapesMatchCustom(num);
+        dataIsUpdate();
+    }
+
+    private void deleteShapesMatchCustom(int num){
+        ArrayList<Integer> shapesToDelete = shapesMap.get(num);
+        Collections.sort(shapesToDelete, Collections.reverseOrder());
+        for (Integer it : shapesToDelete) {
+            shapesForDrawing.remove(it);
+        }
+    }
+
+    public ArrayList<String> getShapesForDrawing() {
+        return shapesForDrawing;
+    }
+
+    public ArrayList<String> getCustomShapes() {
+        return customShapes;
     }
 
     public static void main(String[] args) {
-        Server server = new Server();
-        server.startServer();
+        Server sr = new Server();
+        sr.addCustomShape("W!1!1!2!0!1!5!6");
+        sr.addCustomShape("W!1!1!3!0!1!5!6!3!4");
+        sr.addCustomShape("W!1!1!2!0!0!4!6");
+        sr.addShapeForDrawing("W!2!2!2!0!1!5!6", 0);
+        sr.addShapeForDrawing("W!3!2!2!0!1!5!6", 0);
+        sr.addShapeForDrawing("W!2!2!3!0!1!5!6!3!4", 1);
+        sr.addShapeForDrawing("W!8!2!3!0!1!5!6!3!4", 1);
+        sr.addShapeForDrawing("W!2!1!3!0!1!5!6!3!4", 1);
+        sr.addShapeForDrawing("W!1!1!2!0!0!4!6", 2);
+        sr.addShapeForDrawing("W!2!1!2!0!0!4!6", 2);
+        sr.addShapeForDrawing("W!1!3!2!0!0!4!6", 2);
+        sr.start();
     }
-
 }

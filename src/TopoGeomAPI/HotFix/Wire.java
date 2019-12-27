@@ -1,6 +1,6 @@
 package TopoGeomAPI.HotFix;
 
-import TopoGeomAPI.Geometry.Point;
+import TopoGeomAPI.HotFix.Point;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +16,10 @@ public class Wire implements  Shape{
 
     public Wire(){
         points = new ArrayList<>();
+    }
+
+    public Wire(List<Point> Points){
+        //TODO
     }
 
     public List<Point> getPoints() {

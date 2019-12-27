@@ -1,6 +1,10 @@
 package ServerClient;
 
+import TopoGeomAPI.HotFix.Shape;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.*;
 import java.awt.*;
@@ -9,94 +13,113 @@ import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import TopoGeomAPI.HotFix.*;
 
-class Client extends JFrame {
+class Client {
 
     // States
-    private static final int SERVER_PORT = 1111;
-    private Socket clientSocket;
-    InetAddress inetAddress = null;
-    private DataInputStream inMessage;
-    private DataOutputStream outMessage;
-    private JTextField textField;
+    static final int PORT = 3443;
+    private ServerHandler server;
+    private boolean dataIsActual;
+    private ArrayList<Shape> shapesForDrawing;
+    private ArrayList<Shape> customShapes;
+    private static final String SERVER_HOST = "localhost";
+    private Socket mySocket;
+
 
     //Methods
-    class  MyThread extends Thread {
-        @Override
-        public void run () {
-            try {
-                try {
-                    inetAddress = InetAddress.getLocalHost();
-                } catch (UnknownHostException e) {
-                    e.printStackTrace();
-                }
-                clientSocket = new Socket(inetAddress, SERVER_PORT);
-                inMessage = new DataInputStream(clientSocket.getInputStream());
-                outMessage  = new DataOutputStream(clientSocket.getOutputStream());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-    }
     public Client() {
-        MyThread connect = new MyThread();
-        connect.start();
-        setBounds(300, 150, 300, 250);
-        setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
-        JPanel bottomPanel = new JPanel(new BorderLayout());
-        add(bottomPanel, BorderLayout.SOUTH);
-        JButton ready = new JButton("Enter");
-        bottomPanel.add(ready, BorderLayout.EAST);
-        textField = new JTextField("text field: ");
-        bottomPanel.add(textField, BorderLayout.CENTER);
-        textField.addFocusListener(new FocusAdapter() {
-            @Override
-            public void focusGained(FocusEvent e) {
-                textField.setText("");
-            }
-        });
-        ready.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    String test;
-                    System.out.println(textField.getText());
-                    test = textField.getText();
-                    TestImg obj = new TestImg(test);
-                    Gson gson = new Gson();
-                    String JSON = gson.toJson(obj);
-                    System.out.println(JSON);
-                    outMessage.writeUTF(JSON);
-                    //outMessage.writeUTF(textField.getText());
-                    outMessage.flush();
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-            }
-        });
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                try {
-                    while (true) {
-                        String answer = inMessage.readUTF();
-                        //outMessage.writeUTF(answer);
-                        System.out.println(answer);
-                    }
-                } catch (Exception e) { }
-            }
-        }).start();
-        setVisible(true);
+        try {
+            dataIsActual = false;
+            mySocket = new Socket(SERVER_HOST, PORT);
+            server = new ServerHandler(this, mySocket);
+            new Thread(server).start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
-    //TODO
-    //Кнопку сохранить от Андрея  передать на сервер измененную фигуру, отправить остальным результат
-    public void RepaintHandler(){
 
+    public void addShapeForDrawing(Shape sh, int customShNumber){
+        Message msg = new Message();
+        msg.code = Cods.ClientCode_AddSFD;
+        msg.data.add(""+customShNumber);
+        msg.data.add(DataTransferType.transfer(sh));
+        server.sendMsg(msg);
+    }
+    public void addCustomShape(Shape sh){
+        Message msg = new Message();
+        msg.code = Cods.ClientCode_AddCS;
+        msg.data.add(DataTransferType.transfer(sh));
+        server.sendMsg(msg);
+    }
+    public void deleteCustomShape(int customShNumber){
+        Message msg = new Message();
+        msg.code = Cods.ClientCode_DelCS;
+        msg.data.add(""+customShNumber);
+        server.sendMsg(msg);
+    }
+    public void getActualDrawList(){
+        Message msg = new Message();
+        msg.code = Cods.ClientCode_GetSFD;
+        server.sendMsg(msg);
+
+    }
+    public void getActualCustomShapeList(){
+        Message msg = new Message();
+        msg.code = Cods.ClientCode_GetCS;
+        server.sendMsg(msg);
+
+    }
+    public  boolean myDataIsActual(){
+        return  dataIsActual;
+    }
+
+    public void dataIsNotActual() {
+        dataIsActual = false;
+    }
+
+    public void updateCustomShape(ArrayList<String> data) {
+        customShapes = new ArrayList<Shape>();
+        for (String it : data)
+            customShapes.add(DataTransferType.transfer(it));
+        dataIsActual = true;
+    }
+
+    public void updateShapesForDrawing(ArrayList<String> data) {
+        shapesForDrawing = new ArrayList<Shape>();
+        for (String it : data)
+            shapesForDrawing.add(DataTransferType.transfer(it));
+        dataIsActual = true;
+    }
+
+    public ArrayList<Shape> getCustomShapes() {
+        //while(!dataIsActual);
+        dataIsActual = false;
+        return customShapes;
+    }
+
+    public ArrayList<Shape> getShapesForDrawing() {
+        //while(!dataIsActual);
+        dataIsActual = false;
+        return shapesForDrawing;
     }
 
     public static void main(String[] args) {
-        Client client = new Client();
+        Client cl = new Client();
+        cl.getActualDrawList();
+        ArrayList<Shape> sh = cl.getShapesForDrawing();
+        cl.getActualCustomShapeList();
+        cl.getCustomShapes();
+        cl.addCustomShape(DataTransferType.transfer("W!1!1!2!0!0!4!0"));
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!0"), cl.customShapes.size()-1);
+        cl.addShapeForDrawing(DataTransferType.transfer("W!1!1!2!0!0!4!6"), cl.customShapes.size()-1);
+        cl.getActualDrawList();
+        sh = cl.getShapesForDrawing();
+        cl.getActualCustomShapeList();
+        sh = cl.getCustomShapes();
     }
-
 }
